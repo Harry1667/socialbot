@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: socialbot-pg
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: socialbot
+      POSTGRES_USER: socialbot
+      POSTGRES_PASSWORD: socialbot
+    ports:
+      - "5433:5432"
+    volumes:
+      - socialbot_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U socialbot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  socialbot_pg_data:

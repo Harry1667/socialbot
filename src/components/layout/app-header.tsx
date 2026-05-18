@@ -3,6 +3,7 @@ import { Plus, Sparkles, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { HookPicker } from "@/components/hooks/picker";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 
 export function AppHeader() {
   return (
@@ -41,6 +42,7 @@ export function AppHeader() {
 
       <div className="flex items-center gap-2">
         <HookPicker />
+        <ThemeToggle />
         <Button asChild size="sm" className="gap-1.5">
           <Link href="/agent/socialmaster/i/new">
             <Plus className="size-4" />
