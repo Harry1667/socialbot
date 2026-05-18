@@ -6,24 +6,33 @@ import { cn } from "@/lib/utils";
 import type { Article, IdentityStats } from "@/types";
 import { StatsCards } from "@/components/identity/stats-cards";
 import { ArticleGrid } from "@/components/article/grid";
+import { SocialAccountsPanel } from "@/components/identity/social-accounts";
 
 interface IdentityTabsProps {
   articles: Article[];
   stats: IdentityStats;
+  identityId: string;
 }
 
-const TABS = [
+type TabDef = {
+  id: "overview" | "profile" | "articles" | "media" | "schedule" | "analytics";
+  label: string;
+  icon: typeof LayoutDashboard;
+  withCount?: boolean;
+};
+
+const TABS: TabDef[] = [
   { id: "overview", label: "總覽", icon: LayoutDashboard },
   { id: "profile", label: "角色管理", icon: User },
   { id: "articles", label: "文章", icon: FileText, withCount: true },
   { id: "media", label: "媒體", icon: ImageIcon },
   { id: "schedule", label: "排程發文", icon: CalendarClock },
   { id: "analytics", label: "效果追蹤", icon: TrendingUp },
-] as const;
+];
 
-type TabId = (typeof TABS)[number]["id"];
+type TabId = TabDef["id"];
 
-export function IdentityTabs({ articles, stats }: IdentityTabsProps) {
+export function IdentityTabs({ articles, stats, identityId }: IdentityTabsProps) {
   const [active, setActive] = useState<TabId>("overview");
 
   return (
@@ -86,7 +95,13 @@ export function IdentityTabs({ articles, stats }: IdentityTabsProps) {
           </div>
         )}
 
-        {active !== "overview" && active !== "articles" && (
+        {active === "profile" && (
+          <div className="flex flex-col gap-6 max-w-3xl">
+            <SocialAccountsPanel identityId={identityId} />
+          </div>
+        )}
+
+        {active !== "overview" && active !== "articles" && active !== "profile" && (
           <EmptyTab label={TABS.find((t) => t.id === active)!.label} />
         )}
       </div>

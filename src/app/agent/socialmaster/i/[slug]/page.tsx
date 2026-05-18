@@ -99,7 +99,7 @@ export default async function IdentityDetailPage({
         <IdentitySidebar identities={identities} activeSlug={slug} />
         <main className="flex-1 overflow-y-auto">
           <IdentityHeader identity={identity} />
-          <IdentityTabs articles={articles} stats={stats} />
+          <IdentityTabs articles={articles} stats={stats} identityId={identity.id} />
         </main>
       </div>
     </div>

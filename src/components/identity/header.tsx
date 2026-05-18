@@ -2,6 +2,7 @@ import { MoreHorizontal, Settings, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { GenerateArticleDialog } from "@/components/article/generate-dialog";
 import type { Identity } from "@/types";
 
 export function IdentityHeader({ identity }: { identity: Identity }) {
@@ -35,6 +36,10 @@ export function IdentityHeader({ identity }: { identity: Identity }) {
       </div>
 
       <div className="flex items-center gap-2">
+        <GenerateArticleDialog
+          identitySlug={identity.slug}
+          identityName={identity.name}
+        />
         <Button variant="outline" size="sm" className="gap-1.5">
           <Share2 className="size-4" />
           發布

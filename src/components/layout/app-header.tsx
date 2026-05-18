@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { Plus, Settings2, Sparkles, Bell } from "lucide-react";
+import { Plus, Sparkles, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { HookPicker } from "@/components/hooks/picker";
 
 export function AppHeader() {
   return (
@@ -39,10 +40,7 @@ export function AppHeader() {
       </div>
 
       <div className="flex items-center gap-2">
-        <Button variant="ghost" size="sm" className="gap-1.5">
-          <Settings2 className="size-4" />
-          <span className="hidden sm:inline">Hook 模板</span>
-        </Button>
+        <HookPicker />
         <Button asChild size="sm" className="gap-1.5">
           <Link href="/agent/socialmaster/i/new">
             <Plus className="size-4" />
