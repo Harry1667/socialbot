@@ -1,0 +1,159 @@
+// SocialMaster Prisma Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// Identity 身份/人設
+// ============================================
+model Identity {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  description     String?
+  avatarText      String   @default("?")
+  avatarColor     String   @default("bg-slate-500")
+  bio             String?  @db.Text
+  audience        String?
+  tone            String?
+  systemPrompt    String?  @db.Text
+  bannedWords     String[] @default([])
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  articles        Article[]
+  socialAccounts  SocialAccount[]
+  hookTemplates   HookTemplate[]
+
+  @@map("identities")
+}
+
+// ============================================
+// Article 文章
+// ============================================
+enum ArticleStatus {
+  DRAFT
+  PENDING_REVIEW
+  APPROVED
+  SCHEDULED
+  PUBLISHED
+  FAILED
+}
+
+model Article {
+  id              String        @id @default(cuid())
+  identityId      String
+  identity        Identity      @relation(fields: [identityId], references: [id], onDelete: Cascade)
+  title           String
+  content         String        @db.Text
+  excerpt         String?       @db.Text
+  coverImage      String?
+  hashtags        String[]      @default([])
+  status          ArticleStatus @default(DRAFT)
+  scheduledAt     DateTime?
+  publishedAt     DateTime?
+  targetPlatforms String[]      @default([])
+  hookTemplateId  String?
+  hookTemplate    HookTemplate? @relation(fields: [hookTemplateId], references: [id])
+  publishResults  PublishResult[]
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([identityId, status])
+  @@index([scheduledAt])
+  @@map("articles")
+}
+
+// ============================================
+// SocialAccount 社群帳號綁定
+// ============================================
+enum SocialPlatform {
+  FACEBOOK
+  INSTAGRAM
+  THREADS
+  TWITTER
+  LINKEDIN
+}
+
+model SocialAccount {
+  id              String         @id @default(cuid())
+  identityId      String
+  identity        Identity       @relation(fields: [identityId], references: [id], onDelete: Cascade)
+  platform        SocialPlatform
+  accountName     String
+  accountId       String
+  accessToken     String         @db.Text
+  refreshToken    String?        @db.Text
+  tokenExpiresAt  DateTime?
+  isActive        Boolean        @default(true)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@unique([identityId, platform, accountId])
+  @@map("social_accounts")
+}
+
+// ============================================
+// PublishResult 發布結果
+// ============================================
+model PublishResult {
+  id            String         @id @default(cuid())
+  articleId     String
+  article       Article        @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  platform      SocialPlatform
+  status        String
+  externalId    String?
+  externalUrl   String?
+  errorMessage  String?        @db.Text
+  publishedAt   DateTime       @default(now())
+
+  @@index([articleId])
+  @@map("publish_results")
+}
+
+// ============================================
+// HookTemplate Hook 模板
+// ============================================
+model HookTemplate {
+  id          String   @id @default(cuid())
+  identityId  String?
+  identity    Identity? @relation(fields: [identityId], references: [id], onDelete: Cascade)
+  name        String
+  category    String
+  template    String   @db.Text
+  variables   String[] @default([])
+  usageCount  Int      @default(0)
+  isGlobal    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  articles    Article[]
+
+  @@index([identityId, category])
+  @@map("hook_templates")
+}
+
+// ============================================
+// Media 媒體庫
+// ============================================
+model Media {
+  id         String   @id @default(cuid())
+  url        String
+  type       String
+  filename   String
+  size       Int
+  width      Int?
+  height     Int?
+  altText    String?
+  tags       String[] @default([])
+  folder     String?
+  createdAt  DateTime @default(now())
+
+  @@map("media")
+}
