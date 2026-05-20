@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { publish } from "@/lib/publishers";
+import { ensureFreshToken } from "@/lib/oauth";
 import type { SocialPlatform } from "@prisma/client";
 
 /**
@@ -61,10 +62,25 @@ export async function POST(
         };
       }
 
+      // 過期前自動 refresh（dry-run 跳過）
+      let fresh = account;
+      if (!body.dryRun) {
+        try {
+          fresh = await ensureFreshToken(account);
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          return {
+            platform,
+            ok: false,
+            error: `Token refresh 失敗：${msg}（請重新授權）`,
+          };
+        }
+      }
+
       const out = await publish({
         platform,
-        accessToken: body.dryRun ? "DRY_RUN" : account.accessToken,
-        accountId: account.accountId,
+        accessToken: body.dryRun ? "DRY_RUN" : fresh.accessToken,
+        accountId: fresh.accountId,
         title: article.title,
         content: article.content,
         hashtags: article.hashtags,

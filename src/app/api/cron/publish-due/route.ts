@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { publish } from "@/lib/publishers";
+import { ensureFreshToken } from "@/lib/oauth";
 import type { SocialPlatform } from "@prisma/client";
 
 /**
@@ -69,10 +70,27 @@ export async function GET(req: Request) {
           return { platform, ok: false, error: "no account" };
         }
 
+        // 過期前自動 refresh
+        let fresh = account;
+        try {
+          fresh = await ensureFreshToken(account);
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : String(err);
+          await db.publishResult.create({
+            data: {
+              articleId: article.id,
+              platform,
+              status: "FAILED",
+              errorMessage: `Token refresh 失敗：${msg}`,
+            },
+          });
+          return { platform, ok: false, error: "token refresh failed" };
+        }
+
         const out = await publish({
           platform,
-          accessToken: account.accessToken,
-          accountId: account.accountId,
+          accessToken: fresh.accessToken,
+          accountId: fresh.accountId,
           title: article.title,
           content: article.content,
           hashtags: article.hashtags,

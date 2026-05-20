@@ -8,6 +8,31 @@
  */
 
 import type { SocialPlatform } from "@prisma/client";
+import { db } from "@/lib/db";
+
+/**
+ * X 每日發文 cap（防 pay-per-use 爆預算）
+ * 預設 50，可用 X_DAILY_POST_CAP 環境變數覆寫；設 0 = 停用
+ */
+function getTwitterDailyCap(): number {
+  const raw = process.env.X_DAILY_POST_CAP;
+  if (!raw) return 50;
+  const n = parseInt(raw, 10);
+  return Number.isFinite(n) && n >= 0 ? n : 50;
+}
+
+/** 數今天（UTC）已 SUCCESS 的 X 發文數 */
+async function countTwitterPostsToday(): Promise<number> {
+  const startOfDay = new Date();
+  startOfDay.setUTCHours(0, 0, 0, 0);
+  return db.publishResult.count({
+    where: {
+      platform: "TWITTER",
+      status: "SUCCESS",
+      publishedAt: { gte: startOfDay },
+    },
+  });
+}
 
 export interface PublishInput {
   /** 目標平台 */
@@ -38,6 +63,20 @@ export async function publish(input: PublishInput): Promise<PublishOutput> {
   // 沒 token → 走 dry-run，方便本機測流程
   if (!input.accessToken || input.accessToken === "DRY_RUN") {
     return dryRun(input);
+  }
+
+  // X 每日發文 cap（pay-per-use 防爆）
+  if (input.platform === "TWITTER") {
+    const cap = getTwitterDailyCap();
+    if (cap > 0) {
+      const used = await countTwitterPostsToday();
+      if (used >= cap) {
+        return {
+          ok: false,
+          error: `已達 X 每日發文上限 ${cap} 篇（今日已 ${used} 篇），明日 00:00 UTC 重置`,
+        };
+      }
+    }
   }
 
   try {
