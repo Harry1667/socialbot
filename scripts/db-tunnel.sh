@@ -15,6 +15,10 @@ if pgrep -fl "${LOCAL_PORT}:.*:5432" >/dev/null 2>&1; then
   exit 0
 fi
 
-ssh -i "$SSH_KEY" -fN -L ${LOCAL_PORT}:127.0.0.1:5432 ${REMOTE_USER}@${REMOTE_HOST}
+ssh -i "$SSH_KEY" -fN \
+  -o ServerAliveInterval=60 \
+  -o ServerAliveCountMax=3 \
+  -o ExitOnForwardFailure=yes \
+  -L ${LOCAL_PORT}:127.0.0.1:5432 ${REMOTE_USER}@${REMOTE_HOST}
 echo "✓ Tunnel 已啟動：localhost:${LOCAL_PORT} → ${REMOTE_HOST}:5432"
 echo "  關閉：pkill -f '${LOCAL_PORT}:.*:5432'"

@@ -1,7 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import { Calendar, MoreHorizontal, Send } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/article/status-badge";
+import { PublishDialog } from "@/components/article/publish-dialog";
 import type { Article } from "@/types";
 
 function formatTime(iso: string): string {
@@ -27,6 +31,7 @@ const COVER_GRADIENTS = [
 export function ArticleCard({ article, index }: { article: Article; index: number }) {
   const gradient = COVER_GRADIENTS[index % COVER_GRADIENTS.length];
   const timestamp = article.publishedAt ?? article.scheduledAt ?? article.createdAt;
+  const [publishOpen, setPublishOpen] = useState(false);
 
   return (
     <article className="group flex flex-col overflow-hidden rounded-xl border bg-card transition-all hover:shadow-md">
@@ -57,7 +62,13 @@ export function ArticleCard({ article, index }: { article: Article; index: numbe
             <span className="tabular-nums">{formatTime(timestamp)}</span>
           </div>
           <div className="flex items-center gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-            <Button variant="ghost" size="icon" className="size-7">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="size-7"
+              onClick={() => setPublishOpen(true)}
+              title="發布"
+            >
               <Send className="size-3.5" />
             </Button>
             <Button variant="ghost" size="icon" className="size-7">
@@ -66,6 +77,14 @@ export function ArticleCard({ article, index }: { article: Article; index: numbe
           </div>
         </div>
       </div>
+
+      <PublishDialog
+        open={publishOpen}
+        onOpenChange={setPublishOpen}
+        articleId={article.id}
+        articleTitle={article.title}
+        defaultPlatforms={article.targetPlatforms}
+      />
     </article>
   );
 }

@@ -4,7 +4,7 @@ import { IdentitySidebar } from "@/components/identity/sidebar";
 import { IdentityHeader } from "@/components/identity/header";
 import { IdentityTabs } from "@/components/identity/tabs";
 import { db } from "@/lib/db";
-import type { Identity, Article, IdentityStats, ArticleStatus } from "@/types";
+import type { Identity, Article, IdentityStats, ArticleStatus, SocialPlatform } from "@/types";
 
 export const dynamic = "force-dynamic";
 
@@ -78,7 +78,9 @@ export default async function IdentityDetailPage({
     publishedAt: a.publishedAt?.toISOString(),
     scheduledAt: a.scheduledAt?.toISOString(),
     createdAt: a.createdAt.toISOString(),
-    targetPlatforms: [],
+    targetPlatforms: (a.targetPlatforms as string[]).map(
+      (p) => p.toLowerCase() as SocialPlatform,
+    ),
     hashtags: a.hashtags,
   }));
 
