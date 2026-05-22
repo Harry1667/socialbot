@@ -1,36 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SocialBot
 
-## Getting Started
+社群媒體內容管理平台 — 建立多個品牌人設，AI 生成文章，排程發布至 Facebook、Instagram、Threads、Twitter、LinkedIn。
 
-First, run the development server:
+## 功能
+- **多人設管理**：每個 Identity 有獨立的語氣、受眾設定、系統 Prompt、禁用詞
+- **AI 文章生成**：SocialMaster Agent 依人設風格生成貼文
+- **Hook 模板庫**：常用開場白模板，提升互動率
+- **排程發布**：設定發布時間，自動送出至各平台
+- **發布結果追蹤**：記錄每篇文章各平台的發布狀態與外部連結
+- **媒體庫**：集中管理圖片、影片資源
 
+## 技術棧
+- Next.js（App Router）+ TypeScript
+- Prisma + PostgreSQL
+- Docker Compose
+
+## 支援平台
+Facebook · Instagram · Threads · Twitter/X · LinkedIn
+
+## 快速開始
 ```bash
+cp .env.example .env
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
