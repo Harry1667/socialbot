@@ -24,3 +24,32 @@ cp .env.example .env
 npm install
 npm run dev
 ```
+
+---
+
+## English
+
+A social-media content management platform. Build multiple brand personas, generate posts with AI, and schedule publishing to Facebook, Instagram, Threads, Twitter, and LinkedIn.
+
+### Features
+- **Multi-persona management**: each identity has its own tone, target audience, system prompt, and banned-word list
+- **AI post generation**: the SocialMaster agent writes posts in each persona's voice
+- **Hook template library**: reusable opening lines tuned for engagement
+- **Scheduled publishing**: set a time, the post goes out automatically across platforms
+- **Publish tracking**: per-platform status and external links for every post
+- **Media library**: central storage for images and video assets
+
+### Tech stack
+- Next.js (App Router) + TypeScript
+- Prisma + PostgreSQL
+- Docker Compose
+
+### Supported platforms
+Facebook · Instagram · Threads · Twitter/X · LinkedIn
+
+### Quick start
+```bash
+cp .env.example .env
+npm install
+npm run dev
+```
